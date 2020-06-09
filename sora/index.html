@@ -6,116 +6,118 @@
 
   <style type="text/stylus">
 *
-  box-sizing: border-box
-  cursor: default
+    box-sizing: border-box
+    cursor: default
 
 html, body
-  display: flex
-  flex-direction: column
-  height: 100%
-  align-items: center
-  justify-content: center
-  background: #333
-  color: #FFF
-  font-family: Verdana
-  font-size: 36px
+    display: flex
+    flex-direction: column
+    height: 100%
+    align-items: center
+    justify-content: center
+    background: #333
+    color: #FFF
+    font-family: Verdana
+    font-size: 36px
 
 .headline
-  margin-bottom: 40px
-  font-size: 100px
+    margin-bottom: 40px
+    font-size: 100px
 
 .title
-  height: 1em
-  background: currentcolor
+    height: 1em
+    background: currentcolor
 
 .header
-  position: relative
-  width: 640px
-  padding: 6px
-  overflow: hidden
-  background: #F3F3F3
-  color: #111
-  border-radius: 4px
-
-  .title
     position: relative
-    width: 4em
-    // triangles
-    $size = 0.25em
+    width: 640px
+    padding: 6px
+    overflow: hidden
+    background: #F3F3F3
+    color: #111
+    border-radius: 4px
 
-    &:before, &:after
-      content: ''
-      position: absolute
-      top: (1 - $size * 2) * 0.5
-      right: $size * -3
-      width: $size
-      border-left: $size solid #666
-      border-top: $size solid transparent
-      border-bottom: $size solid transparent
+    .title
+        position: relative
+        width: 4em
+        // triangles
+        $size = 0.25em
 
-    &:after
-      right: $size * -4
+        &:before, &:after
+            content: ''
+            position: absolute
+            top: (1 - $size * 2) * 0.5
+            right: $size * -3
+            width: $size
+            border-left: $size solid #666
+            border-top: $size solid transparent
+            border-bottom: $size solid transparent
 
-  .number
-    position: absolute
-    top: 2px
-    right: 4px
+        &:after
+            right: $size * -4
 
-  .progress
-    margin-top: 4px
-    width: 100%
-    height: 6px
-    background: #F29D9D
-    border-radius: 2px
+    .number
+        position: absolute
+        top: 2px
+        right: 4px
+
+    .progress
+        margin-top: 4px
+        width: 100%
+        height: 6px
+        background: #F29D9D
+        border-radius: 2px
 
 .panel
-  display: grid
-  margin-top: 16px
-  width: 640px
-  padding: 16px
-  grid-template-columns: 45% min-content auto
-  grid-row-gap: @padding
-  align-items: center
-  background: #0003
+    display: grid
+    margin-top: 16px
+    width: 640px
+    padding: 16px
+    grid-template-columns: 45% min-content auto
+    grid-row-gap: @padding
+    align-items: center
+    background: #0003
 
-  .title
-    width: 2.5em
+    .title
+        width: 2.5em
 
 input
-  width: 2em
-  height: 1em
-  background: transparent
-  color: inherit
-  font: inherit
-  line-height: 1
-  border: none
-  outline: none !important
-  cursor: pointer
-  transition: background 0.1s ease-out
+    width: 2em
+    height: 1em
+    background: transparent
+    color: inherit
+    font: inherit
+    line-height: 1
+    border: none
+    outline: none !important
+    cursor: pointer
+    transition: background 0.1s ease-out
 
-  &:hover, &:focus
-    background: #FFF2
+    &:hover, &:focus
+        background: #FFF2
 
 .result
-  margin: 36px 0
-  opacity: 0
-  font-size: 24px
-  line-height: 2
-  text-align: center
-  transition: opacity 0.2s ease-out
+    margin: 36px 0
+    opacity: 0
+    font-size: 24px
+    line-height: 2
+    text-align: center
+    transition: opacity 0.2s ease-out
 
 .small
-  margin-top -8px
-  color #666
-  font-size 12px
+    margin-top -8px
+    color #666
+    font-size 12px
 
 .key
-  margin-top: 16px
-  font-size: 36px
-  cursor: text
+    margin-top: 16px
+    font-size: 36px
+    cursor: text
   </style>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+      crossorigin="anonymous"></script>
   <script src="https://stylus-lang.com/try/stylus.min.js"></script>
 </head>
 <body>
@@ -123,9 +125,9 @@ input
 var rawStylus = $('style[type="text/stylus"]').text();
 
 stylus.render(rawStylus, {}, function(err, css) {
-  if (err) document.write(err + '');
+    if (err) document.write(err + '');
 
-  $('<style/>').text(css).appendTo('head');
+    $('<style/>').text(css).appendTo('head');
 });
 </script>
 
