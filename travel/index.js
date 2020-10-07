@@ -66,13 +66,7 @@ if (typeof WebAssembly !== 'object') {
     throw 1;
 }
 
-let loadingUpdater = -1;
-
-(function loading(i) {
-    $('#loading').text('Loading' + '.'.repeat(i % 3 + 1));
-
-    loadingUpdater = setInterval(loading, 500, i + 1);
-})(0);
+const loadingUpdater = ((i) => setInterval(() => $('#loading').text('Loading' + '.'.repeat(i++ % 3 + 1)), 500))(0);
 
 var Module = {
     postRun() {
