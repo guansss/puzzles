@@ -3,5 +3,5 @@ Have fun.
 
 <br>
 
-- [Sora](sora/index.html)
-- [Travel](travel/index.html)
+- [Sora](https://guansss.github.io/puzzles/sora/index.html)
+- [Travel](https://guansss.github.io/puzzles/travel/index.html)
