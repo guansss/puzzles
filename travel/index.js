@@ -31,7 +31,7 @@ async function main() {
     });
 
     // manually update the first input element since it's disabled
-    inputElms.eq(0).trigger('input');
+    // inputElms.eq(0).trigger('input');
 }
 
 function update(values, index) {
@@ -51,6 +51,9 @@ function update(values, index) {
         }
 
     }
+
+    // just do it!
+    travel();
 }
 
 function destination(values) {
@@ -62,13 +65,13 @@ function bf(code, inputs) {
 }
 
 if (typeof WebAssembly !== 'object') {
-    $('#loading').html('The puzzle requires WebAssembly feature which isn\'t supported in this browser, please use a <a href="https://browsehappy.com/">modern browser</a> instead.');
+    $('#loading').html('The puzzle requires WebAssembly feature which isn\'t supported by this browser, please use a <a href="https://browsehappy.com/">modern browser</a> instead.');
     throw 1;
 }
 
 const loadingUpdater = ((i) => setInterval(() => $('#loading').text('Loading' + '.'.repeat(i++ % 3 + 1)), 500))(0);
 
-var Module = {
+window.Module = {
     postRun() {
         // override default function to pass unsigned short parameters
         // don't know why `buffer >> 1` works :/
@@ -79,6 +82,6 @@ var Module = {
         $('#loading').css('opacity', 0);
         $('.panel').css('opacity', 1);
 
-        main().then();
+        main()
     },
 };

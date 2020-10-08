@@ -12,7 +12,7 @@ html, body
     overflow hidden
     background: #333
     color: #FFF
-    font-family: Verdana
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif
     font-size: 36px
 
 a
@@ -77,6 +77,64 @@ input
     font-size: 0.5em
     color: #AAA
     transition: opacity 0.2s ease-in
+
+#result
+    z-index 2
+    display: flex
+    flex-direction: column
+    align-items: center
+    overflow visible
+    line-height 2em
+    font-size 0.8em
+
+    .headline1, .headline2, .action
+        opacity 0
+
+    .action
+        position absolute
+        top 75vh
+        padding .5em 1em
+        cursor pointer
+        animation text-glow 2s ease-in-out infinite alternate
+
+        &:hover
+            letter-spacing .1em
+
+    &.show
+        .headline1, .headline2, .action
+            opacity 1
+
+        .headline1
+            transition opacity .3s ease-out
+
+        .headline2
+            transition opacity .3s ease-out 1.5s
+
+        .action
+            transition opacity .3s ease-out 3s, letter-spacing .2s ease-out
+
+.cover
+    z-index 100
+    position absolute
+    top 0
+    right 0
+    bottom 0
+    left 0
+    pointer-events none
+    transition background-color .8s ease-in
+
+    &.active
+        background #EEE
+
+@keyframes text-glow {
+    from {
+        text-shadow: 0 0 10px #fff
+    }
+    to {
+        text-shadow: 0 0 30px #fff
+    }
+}
+
 
 // https://github.com/elrumordelaluz/csshake
 

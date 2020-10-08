@@ -14,7 +14,7 @@ import { rand, timeout } from './utils';
 window.$ = $;
 
 let traveled = false;
-let cameraShakeMagnitude = 0.5;
+let cameraShakeMagnitude = 0.7;
 
 window.travel = async (result) => {
     if (traveled) return;
@@ -40,7 +40,7 @@ window.travel = async (result) => {
     lightStrips.active = true;
     cameraShakeMagnitude = 1;
 
-    await timeout(3000);
+    await timeout(2500);
 
     space.active = true;
     lightStrips.active = false;
@@ -48,6 +48,24 @@ window.travel = async (result) => {
     await timeout(300);
 
     cameraShakeMagnitude = 0;
+
+    await timeout(2000);
+
+    $('#puzzle').css('display', 'none');
+    $('#result').addClass('show');
+
+    if (result) {
+        $('#result .action').click(async () => {
+            $('.cover').addClass('active');
+
+            await timeout(1000);
+            location.href = result;
+        });
+    } else {
+        $('#result .headline1').text('You\'ve lost in the space');
+        $('#result .headline2').text('');
+        $('#result .action').text('Refresh').click(() => location.reload());
+    }
 };
 
 const scene = new Scene();
@@ -123,6 +141,8 @@ function animate(now) {
         cancelAnimationFrame(id);
     }
 }
+
+// debug tools
 
 let GUI, Stats, stats;
 
