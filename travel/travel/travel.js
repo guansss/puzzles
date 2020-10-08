@@ -20,9 +20,9 @@ window.travel = async (result) => {
     if (traveled) return;
     traveled = true;
 
-    requestAnimationFrame(animate);
-
     $('#puzzle .wrapper2').addClass('shake');
+
+    requestAnimationFrame(animate);
 
     await timeout(1500);
 

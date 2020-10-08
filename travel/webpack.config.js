@@ -1,9 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ThreeMinifierPlugin = require('@yushijinhun/three-minifier-webpack');
 const threeMinifier = new ThreeMinifierPlugin();
 
-module.exports = {
+const config = {
     entry: './travel/travel.js',
     output: {
         filename: 'travel.min.js',
@@ -26,18 +27,16 @@ module.exports = {
                 },
             },
             {
-                test: /\.styl$/,
+                test: /\.(styl|css)$/,
                 use: [
-                    'style-loader',
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            esModule: true,
+                        },
+                    },
                     'css-loader',
                     'stylus-loader',
-                ],
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    'css-loader',
                 ],
             },
             {
@@ -55,14 +54,13 @@ module.exports = {
     },
     plugins: [
         threeMinifier,
+        new MiniCssExtractPlugin({
+            filename: 'index.css'
+        }),
         new webpack.IgnorePlugin({
             checkResource(resource, context) {
-                if (process.env.NODE_ENV === 'production') {
-                    // remove debug tools in production
-                    return resource.match(/stats.js|dat.gui/);
-                }
-
-                return false;
+                // remove debug tools
+                return resource.match(/stats.js|dat.gui/);
             },
         }),
     ],
@@ -71,3 +69,15 @@ module.exports = {
         hot: true,
     },
 };
+
+module.exports = (env, argv) => {
+    config.mode = argv.mode;
+
+    if (argv.mode === 'development') {
+        // keep debug tools in development mode
+        config.plugins.splice(config.plugins.findIndex(p => p instanceof webpack.IgnorePlugin), 1);
+    }
+
+    return config;
+};
+
