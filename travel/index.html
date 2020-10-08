@@ -3,109 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <title>Travel</title>
-
-  <style type="text/stylus">
-*
-    box-sizing: border-box
-    margin: 0
-    cursor: default
-
-html, body
-    display: flex
-    flex-direction: column
-    height: 100%
-    align-items: center
-    justify-content: center
-    background: #333
-    color: #FFF
-    font-family: Verdana
-    font-size: 36px
-
-a
-  color: #1e90ff
-
-.puzzle
-    display: flex
-    flex-direction: column
-    align-items: center
-
-.verse
-    margin-bottom: 3em
-    text-align: center
-    font-size: 0.66em
-
-    p
-        margin-bottom: 2em
-
-.panel
-    opacity: 0
-    transition: opacity 0.2s ease-out
-
-input
-    width: 1em
-    height: 1em
-    background: #FFF2
-    color: inherit
-    font: inherit
-    text-align: center
-    line-height: 1
-    border: none
-    outline: none !important
-    cursor: pointer
-    transition: background 0.1s ease-out
-
-    &[disabled]
-        background: #FFF2 !important
-        cursor: default
-
-    &:hover, &:focus
-        background: #FFF4
-
-#loading
-    font-size: 0.5em
-    color: #AAA
-    transition: opacity 0.2s ease-in
-  </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-      integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
-      crossorigin="anonymous"></script>
-  <script src="https://stylus-lang.com/try/stylus.min.js"></script>
 </head>
 <body>
-<script>
-var rawStylus = $('style[type="text/stylus"]').text();
-
-stylus.render(rawStylus, {}, function(err, css) {
-    if (err) document.write(err + '');
-
-    $('<style/>').text(css).appendTo('head');
-});
-</script>
-
-<div class="puzzle">
-  <div class="verse">
-    <p>Look around you, everything's black and white</p>
-    <p>Oh, how simple is that?</p>
-    <p>Don't you know that it's about the way you look at this world</p>
-    <p>Go straight, or to left</p>
-    <p>Go back, even to right</p>
+<canvas id="canvas"></canvas>
+<div id="puzzle">
+  <div class="wrapper1">
+    <div class="wrapper2">
+      <div class="verse">
+        <p>Look around you, everything's black and white</p>
+        <p>Oh, how simple is that?</p>
+        <p>Don't you know that it's about the way you look at this world</p>
+        <p>Go straight, or to left</p>
+        <p>Go back, even to right</p>
+      </div>
+      <div class="panel">
+        <input type="text" value="2" disabled>
+        <input type="text">
+        <input type="text">
+        <input type="text">
+        <input type="text">
+        <input type="text">
+        <input type="text">
+        <input type="text">
+        <input type="text">
+      </div>
+      <div id="loading">Loading...</div>
+    </div>
   </div>
-  <div class="panel">
-    <input type="text" value="2" disabled>
-    <input type="text">
-    <input type="text">
-    <input type="text">
-    <input type="text">
-    <input type="text">
-    <input type="text">
-    <input type="text">
-    <input type="text">
-  </div>
-  <div id="loading">Loading...</div>
 </div>
 
-<script src="travel.js"></script>
+<script src="build/travel.min.js"></script>
 <script src="index.js"></script>
 <script src="core/core.js"></script>
 </body>
