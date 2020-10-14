@@ -3,11 +3,7 @@ import { UnrealBloomPass as _UnrealBloomPass } from 'three/examples/jsm/postproc
 
 export default class UnrealBloomPass extends _UnrealBloomPass {
     constructor() {
-        super(new Vector2(innerWidth, innerHeight), 1.5, 0.4, 0.85);
-
-        this.threshold = 1;
-        this.strength = 2;
-        this.radius = 0;
+        super(new Vector2(innerWidth, innerHeight), 2, 0, 1);
     }
 
     getSeperableBlurMaterial(kernelRadius) {

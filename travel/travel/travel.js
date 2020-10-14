@@ -38,6 +38,7 @@ window.travel = async (result) => {
     await timeout(500);
 
     lightStrips.active = true;
+    bloomPass.threshold = 1.2;
     cameraShakeMagnitude = 1;
 
     await timeout(2500);
@@ -118,7 +119,7 @@ function animate(now) {
         lastTime = now;
 
         if (bloomPass.threshold > 0) {
-            bloomPass.threshold -= 0.005 * dt;
+            bloomPass.threshold -= 0.002 * dt;
         }
 
         lightStrips.update(dt);
