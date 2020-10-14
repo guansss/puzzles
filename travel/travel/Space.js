@@ -33,12 +33,15 @@ export class Space extends Points {
 
     init() {
         const points = [];
+        const minDistance = 0.1 ** 2;
         let x, y, z;
 
-        for (let i = 0; i < 1000; i++) {
-            x = rand(-1, 1);
-            y = rand(-1, 1);
-            z = rand(-1, 1);
+        for (let i = 0; i < 2000; i++) {
+            do {
+                x = rand(-1, 1);
+                y = rand(-1, 1);
+                z = rand(-1, 1);
+            } while (x ** 2 + y ** 2 + z ** 2 < minDistance);
 
             points.push(x * 600, y * 600, z * 600);
         }
