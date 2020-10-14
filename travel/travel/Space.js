@@ -32,9 +32,8 @@ export class Space extends Points {
     }
 
     init() {
-        let x, y, z;
-
         const points = [];
+        let x, y, z;
 
         for (let i = 0; i < 1000; i++) {
             x = rand(-1, 1);

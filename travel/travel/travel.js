@@ -8,17 +8,16 @@ import '../styles.styl';
 import { LightStrips } from './LightStrips';
 import { Space } from './Space';
 import UnrealBloomPass from './UnrealBloomPass';
-import { rand, timeout } from './utils';
+import { clamp, rand, timeout } from './utils';
 
-// expose jQuery for index.js
+// expose utils for index.js
 window.$ = $;
+window.clamp = clamp;
 
-let traveled = false;
 let cameraShakeMagnitude = 0.7;
 
 window.travel = async (result) => {
-    if (traveled) return;
-    traveled = true;
+    window.travel = () => {};
 
     $('#puzzle .wrapper2').addClass('shake');
 

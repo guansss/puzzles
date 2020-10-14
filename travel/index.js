@@ -19,7 +19,25 @@ const BF_COMMANDS = [
 async function main() {
     const inputElms = $('input');
 
+    // switch focus by pressing arrow keys
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            inputElms.eq(
+                clamp(inputElms.filter(':focus').index() + (e.key === 'ArrowLeft' ? -1 : 1), 1, inputElms.length - 1),
+            ).focus();
+        }
+    });
+
     inputElms.on('input', function() {
+        // jump to next input
+        if (this.oldValue === undefined && inputElms.get(-1) !== this) {
+            const nextInput = inputElms.eq(inputElms.index(this) + 1);
+
+            if (nextInput) {
+                nextInput.focus();
+            }
+        }
+
         // force the value to be a single digit
         const value = this.value.replace(this.oldValue, '').replace('\D', '');
         this.value = isNaN(value) ? 0 : value % 10;
@@ -46,14 +64,16 @@ function update(values, index) {
             console.log(BF_COMMANDS.map(command => command.result));
 
             if (BF_COMMANDS.every(command => command.valid)) {
-                travel(destination(values));
+                // travel(destination(values));
             }
         }
 
     }
 
-    // just do it!
-    travel();
+    if (values.some(value => value === 1)) {
+        // just do it!
+        travel();
+    }
 }
 
 function destination(values) {
@@ -82,6 +102,6 @@ window.Module = {
         $('#loading').css('opacity', 0);
         $('.panel').css('opacity', 1);
 
-        main()
+        main();
     },
 };
