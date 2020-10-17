@@ -6,8 +6,9 @@
   "author": "guansss <821143943@qq.com>",
   "license": "MIT",
   "scripts": {
-    "start-travel": "cd travel & webpack-dev-server",
-    "build-travel": "cd travel & webpack"
+    "start-travel": "cd %INIT_CWD%/travel & webpack-dev-server",
+    "build-travel:core": "cd %INIT_CWD%/travel & emsdk_env.bat & emcc core/core.c -Os -s WASM=1 -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\" -o build/core.js",
+    "build-travel": "cd %INIT_CWD%/travel & yarn build-travel:core & webpack"
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",
