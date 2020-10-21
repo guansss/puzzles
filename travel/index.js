@@ -2,17 +2,35 @@ const BF_COMMANDS = [
     {
         code: '+++++-----.',
         inputs: '',
-        valid: false,
+        output: -1,
     },
     {
         code: ',--.',
-        inputs: '[values[0]]',
-        valid: false,
+        inputs: '$0',
+        output: -1,
     },
     {
-        code: '++++++++++[>++++++++++<-],[>-<-]>-.',
-        inputs: '[values[1] * 10 + values[2]]',
-        valid: false,
+        code: ',-++-++----++--+---++-+-------+-----+---+-++---++-+-+-+----++---++------+---++---+---+-+---+--++-----+-----++--+---+---+--++-------+-+---++++-+-+--------++-+------------++---++-+--+-----+-+-+--+++--+--++-+-----+++-+++---++--++--+---+-+-++++--+--------+--+-.',
+        inputs: '$3 * 10 + $4',
+        output: -1,
+    },
+    {
+        code: '++++++++++[>----------<-],[>+<-]>+.',
+        inputs: '$1 * 10 + $2',
+        output: -1,
+    },
+    {
+        code: ',>++++++[<++++++>-],[<->-]<--.',
+        inputs: '$5 * 10 + $6, $7 * 10 + $8',
+        output: -1,
+    },
+    {
+        code: ',>,<[    >[>+>+<<-]    >[<+>-]    <<-]    >>>'
+            // it's boring and meaningless to calculate this number so I just reveal it
+            + '-'.repeat(1392)
+            + '.',
+        inputs: '$5 * 10 + $6, $7 * 10 + $8',
+        output: -1,
     },
 ];
 
@@ -49,39 +67,41 @@ async function main() {
     });
 
     // manually update the first input element since it's disabled
-    // inputElms.eq(0).trigger('input');
+    inputElms.eq(0).trigger('input');
 }
 
 function update(values, index) {
     for (const command of BF_COMMANDS) {
         // process only necessary commands
-        if (command.inputs.includes(index) || (!command.inputs && !command.valid)) {
-            const inputs = eval(command.inputs) || [];
+        if (command.inputs.includes('$' + index) || (!command.inputs && command.output === -1)) {
+            // replace arguments with actual input values
+            const inputsExpression = command.inputs.replace(/\$(\d)/g, (match, index) => values[index]);
+            const inputs = eval('[' + inputsExpression + ']');
 
-            command.result = bf(command.code, inputs);
-            command.valid = bf(command.code, inputs) === 0;
+            brainfuck(command, inputs);
 
-            console.log(BF_COMMANDS.map(command => command.result));
-
-            if (BF_COMMANDS.every(command => command.valid)) {
-                // travel(destination(values));
+            if (BF_COMMANDS.every(command => command.output === 0)) {
+                // WOO-HOO TAKE OFF!
+                travel(destination(values));
             }
         }
-
-    }
-
-    if (values.some(value => value === 1)) {
-        // just do it!
-        travel();
     }
 }
 
 function destination(values) {
-    return values.join('');
+    const dst = new URL(location.href).searchParams.get('dst');
+
+    if (dst) {
+        return dst.replace('$ID$', values.join(''));
+    }
+
+    // one gets lost when missing a destination
+    return '';
 }
 
-function bf(code, inputs) {
-    return Module.ccall('bf', 'number', ['string', 'array', 'number'], [code, inputs, inputs.length]);
+function brainfuck(command, inputs) {
+    command.output = Module.ccall('bf', 'number', ['string', 'array', 'number'], [command.code, inputs, inputs.length]);
+    console.log(BF_COMMANDS.map(command => command.output));
 }
 
 if (typeof WebAssembly !== 'object') {

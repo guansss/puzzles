@@ -12,6 +12,7 @@ int used_chances = 0;
 
 time_t origin_time = 0;
 
+// May the brute force not be with you.
 unsigned short trap() {
     time_t cur_time = time(0);
 
@@ -19,7 +20,7 @@ unsigned short trap() {
         // subtract 1s to provide chances at first second
         origin_time = cur_time - 1;
 
-        // consume the first call of this function because this will always return 0 for unknown reason
+        // consume the first call of this function because that will always return 0 for unknown reason
         rand();
     }
 
