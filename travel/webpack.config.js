@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ThreeMinifierPlugin = require('@yushijinhun/three-minifier-webpack');
 const threeMinifier = new ThreeMinifierPlugin();
 
-const config = {
+const CONFIG = {
     entry: './travel/travel.js',
     output: {
         filename: 'travel.min.js',
@@ -55,7 +55,7 @@ const config = {
     plugins: [
         threeMinifier,
         new MiniCssExtractPlugin({
-            filename: 'index.css'
+            filename: 'index.css',
         }),
         new webpack.IgnorePlugin({
             checkResource(resource, context) {
@@ -71,13 +71,12 @@ const config = {
 };
 
 module.exports = (env, argv) => {
-    config.mode = argv.mode;
+    return Object.assign({}, CONFIG, {
+        mode: argv.mode,
 
-    if (argv.mode === 'development') {
-        // keep debug tools in development mode
-        config.plugins.splice(config.plugins.findIndex(p => p instanceof webpack.IgnorePlugin), 1);
-    }
-
-    return config;
+        plugins: argv.mode === 'development' ?
+            // keep the debug tools in development mode
+            CONFIG.plugins.filter(p => !(p instanceof webpack.IgnorePlugin)) :
+            CONFIG.plugins,
+    });
 };
-

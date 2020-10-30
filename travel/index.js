@@ -49,11 +49,7 @@ async function main() {
     inputElms.on('input', function() {
         // jump to next input
         if (this.oldValue === undefined && inputElms.get(-1) !== this) {
-            const nextInput = inputElms.eq(inputElms.index(this) + 1);
-
-            if (nextInput) {
-                nextInput.focus();
-            }
+            inputElms.eq(inputElms.index(this) + 1).focus();
         }
 
         // force the value to be a single digit
@@ -61,10 +57,13 @@ async function main() {
         this.value = isNaN(value) ? 0 : value % 10;
         this.oldValue = this.value;
 
-        const values = inputElms.map((index, elm) => +elm.value).get();
+        const values = inputElms.get().map(elm => Number(elm.value));
 
         update(values, inputElms.index(this));
     });
+
+    // execute the first command
+    brainfuck(BF_COMMANDS[0], []);
 
     // manually update the first input element since it's disabled
     inputElms.eq(0).trigger('input');
@@ -72,8 +71,8 @@ async function main() {
 
 function update(values, index) {
     for (const command of BF_COMMANDS) {
-        // process only necessary commands
-        if (command.inputs.includes('$' + index) || (!command.inputs && command.output === -1)) {
+        // process only the commands related to this index
+        if (command.inputs.includes('$' + index)) {
             // replace arguments with actual input values
             const inputsExpression = command.inputs.replace(/\$(\d)/g, (match, index) => values[index]);
             const inputs = eval('[' + inputsExpression + ']');
@@ -95,7 +94,7 @@ function destination(values) {
         return dst.replace('$ID$', values.join(''));
     }
 
-    // one gets lost when missing a destination
+    // one gets lost when missing the destination
     return '';
 }
 
@@ -109,15 +108,13 @@ if (typeof WebAssembly !== 'object') {
     throw 1;
 }
 
-const loadingUpdater = ((i) => setInterval(() => $('#loading').text('Loading' + '.'.repeat(i++ % 3 + 1)), 500))(0);
-
 window.Module = {
     postRun() {
         // override default function to pass unsigned short parameters
-        // don't know why `buffer >> 1` works :/
+        // don't know why but `buffer >> 1` works :/
         window.writeArrayToMemory = (array, buffer) => HEAPU16.set(array, buffer >> 1);
 
-        clearInterval(loadingUpdater);
+        endLoading();
 
         $('#loading').css('opacity', 0);
         $('.panel').css('opacity', 1);

@@ -39,6 +39,19 @@
 </div>
 <div class="cover"></div>
 
+<script>
+const loadingUpdater = (i => setInterval(() => document.getElementById('loading').innerText = 'Loading' + '.'.repeat(i++ % 3 + 1), 500))(0);
+
+function endLoading() {
+    clearInterval(loadingUpdater);
+}
+
+window.onerror = (message, source, lineno, colno, error) => {
+    endLoading();
+    document.getElementById('loading').innerHTML = 'UNEXPECTED ERROR<br>' + message;
+};
+</script>
+
 <script src="build/travel.min.js"></script>
 <script src="index.js"></script>
 <script src="build/core.js"></script>
