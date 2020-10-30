@@ -5,35 +5,33 @@
 
 #include "brainfuck.c"
 
-#define CHANCES_PER_SECOND 3 * 2
+#define TRUE 1
+#define FALSE 0
 
-int max_chances = 0;
-int used_chances = 0;
+#define RATE 12.0f // executions
+#define PER 3.0f // seconds
 
-time_t origin_time = 0;
+float last_check = 0;
+float allowance = RATE;
 
-// May the brute force not be with you.
-unsigned short trap() {
-    time_t cur_time = time(0);
+int warned = FALSE;
 
-    if (origin_time == 0) {
-        // subtract 1s to provide chances at first second
-        origin_time = cur_time - 1;
+// simple throttle algorithm
+// https://stackoverflow.com/a/668327/13237325
+int throttled() {
+    float now = (float)clock() / CLOCKS_PER_SEC;
+    allowance += (now - last_check) * (RATE / PER);
+    last_check = now;
 
-        // consume the first call of this function because that will always return 0 for unknown reason
-        rand();
+    if (allowance > RATE) {
+        allowance = RATE;
+    }
+    if (allowance < 1) {
+        return FALSE;
     }
 
-    max_chances = (cur_time - origin_time) * CHANCES_PER_SECOND;
-
-    used_chances++;
-
-    if (used_chances <= max_chances) {
-        return 0;
-    }
-
-    // it's a trap!
-    return rand();
+    allowance -= 1;
+    return TRUE;
 }
 
 unsigned short EMSCRIPTEN_KEEPALIVE bf(char *code, unsigned short *inputs, unsigned int inputs_count) {
@@ -45,5 +43,15 @@ unsigned short EMSCRIPTEN_KEEPALIVE bf(char *code, unsigned short *inputs, unsig
     compile_bf(code);
     execute_bf();
 
-    return bf_output + trap();
+    if (throttled()) {
+        return bf_output;
+    }
+
+    if (!warned) {
+        warned = TRUE;
+        printf("May the brute force not be with you.\n");
+    }
+
+    // it's a trap!
+    return rand();
 }
