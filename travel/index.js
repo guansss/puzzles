@@ -73,6 +73,7 @@ function update(values, index) {
     for (const command of BF_COMMANDS) {
         // process only the commands related to this index
         if (command.inputs.includes('$' + index)) {
+
             // replace arguments with actual input values
             const inputsExpression = command.inputs.replace(/\$(\d)/g, (match, index) => values[index]);
             const inputs = eval('[' + inputsExpression + ']');
@@ -80,8 +81,8 @@ function update(values, index) {
             brainfuck(command, inputs);
 
             if (BF_COMMANDS.every(command => command.output === 0)) {
-                // WOO-HOO TAKE OFF!
-                travel(destination(values));
+                // WOO-HOO, TAKE OFF!
+                travel(destination(values), line2(values));
             }
         }
     }
@@ -98,19 +99,21 @@ function destination(values) {
     return '';
 }
 
+// I have to encrypt the second line in the result view because it hints the answer
+function line2(values) {
+    const raw = 'C})sag$vxglm\'fd$iaea}';
+    return String.fromCharCode(...[...raw].map((s, i) => s.charCodeAt(0) ^ values[i % values.length]));
+}
+
 function brainfuck(command, inputs) {
     command.output = Module.ccall('bf', 'number', ['string', 'array', 'number'], [command.code, inputs, inputs.length]);
     console.log(BF_COMMANDS.map(command => command.output));
 }
 
-if (typeof WebAssembly !== 'object') {
-    $('#loading').html('The puzzle requires WebAssembly feature which isn\'t supported by this browser, please use a <a href="https://browsehappy.com/">modern browser</a> instead.');
-    throw 1;
-}
-
 window.Module = {
+    // runs when the core has been loaded
     postRun() {
-        // override default function to pass unsigned short parameters
+        // override this function to pass unsigned short parameters
         // don't know why but `buffer >> 1` works :/
         window.writeArrayToMemory = (array, buffer) => HEAPU16.set(array, buffer >> 1);
 

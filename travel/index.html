@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" content="width=device-width, initial-scale=1">
   <title>Travel</title>
   <link rel="stylesheet" href="build/index.css">
 </head>
@@ -11,6 +11,11 @@
   <div class="wrapper1">
     <div class="wrapper2">
       <div class="verse">
+        <p>Look around you, everything's black and white</p>
+        <p>Oh, how simple is that?</p>
+        <p>Don't you know that it's about the way you look at this world</p>
+        <p>Go straight, or to left</p>
+        <p>Go back, even to right</p>
       </div>
       <div class="panel">
         <input type="text" value="2" disabled>
@@ -28,7 +33,7 @@
   </div>
 </div>
 <div id="result">
-  <div class="headline1"></div>
+  <div class="headline1">You've traveled here</div>
   <div class="headline2"></div>
   <div class="action">Reward</div>
 </div>
@@ -41,10 +46,17 @@ function endLoading() {
     clearInterval(loadingUpdater);
 }
 
-window.onerror = (message, source, lineno, colno, error) => {
+window.onerror = message => {
     endLoading();
     document.getElementById('loading').innerHTML = 'UNEXPECTED ERROR<br>' + message;
 };
+
+if (typeof WebAssembly == 'object') {
+    endLoading();
+    document.getElementById('loading').innerHTML = `
+        The puzzle requires WebAssembly feature which isn't supported by this browser,
+        please use a <a href="https://browsehappy.com/">modern browser</a> instead.</div>`;
+}
 </script>
 
 <script src="build/travel.min.js"></script>

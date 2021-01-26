@@ -16,7 +16,7 @@ window.clamp = clamp;
 
 let cameraShakeMagnitude = 0.7;
 
-window.travel = async (result) => {
+window.travel = async (result, line2) => {
     window.travel = () => {};
 
     $('#puzzle .wrapper2').addClass('shake');
@@ -55,6 +55,7 @@ window.travel = async (result) => {
     $('#result').addClass('show');
 
     if (result) {
+        $('#result .headline2').text(line2);
         $('#result .action').click(async () => {
             $('.cover').addClass('active');
 
@@ -63,7 +64,6 @@ window.travel = async (result) => {
         });
     } else {
         $('#result .headline1').text('You\'ve lost in the space');
-        $('#result .headline2').text('');
         $('#result .action').text('Refresh').click(() => location.reload());
     }
 };
