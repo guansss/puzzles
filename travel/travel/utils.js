@@ -6,6 +6,6 @@ export function clamp(value, lower, upper) {
     return value < lower ? lower : value > upper ? upper : value;
 }
 
-export function timeout(ms) {
+export function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

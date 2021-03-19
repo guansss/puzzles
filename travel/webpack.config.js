@@ -67,6 +67,7 @@ const CONFIG = {
     devServer: {
         contentBase: __dirname,
         hot: true,
+        host: '0.0.0.0',
     },
 };
 

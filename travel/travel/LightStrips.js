@@ -1,7 +1,7 @@
 import { BufferGeometry, Float32BufferAttribute, Mesh, RawShaderMaterial } from 'three';
 import { rand } from './utils';
 
-const stripCount = 60 * 2;
+const stripCount = 100 * 2;
 
 export class LightStrips extends Mesh {
 
@@ -51,45 +51,64 @@ void main() {
         const indices = [];
 
         // first point as the origin
-        const points = [0, 0, -800];
-        const alphas = [0];
-        const infos = [true, 0];
+        const points = [];
+        const alphas = [];
+        const infos = [];
 
-        const minSize = 0.1;
-        const maxSize = 1.2;
+        const farZ = -5000;
+        const nearZ = 10;
+        const minRadius = 80;
+        const maxRadius = 2000;
+        const minSize = 0.2;
+        const maxSize = 0.8;
         const alphaScalar = (1 - 0.1) / (maxSize - minSize);
 
-        let x, y;
+        let centerX, centerY;
+        let x1, y1, x2, y2;
         let h, scale;
-        let size, angle;
+        let size, angle, radius;
         let alpha;
+        let offset;
 
         for (let i = 0; i < stripCount; i++) {
             angle = rand(0, Math.PI * 2);
+            radius = rand(minRadius, maxRadius);
             size = rand(minSize, maxSize);
 
-            x = Math.sin(angle) * 100;
-            y = Math.cos(angle) * 100;
+            centerX = Math.sin(angle) * radius;
+            centerY = Math.cos(angle) * radius;
 
-            h = Math.sqrt(x ** 2 + y ** 2);
+            h = Math.sqrt(centerX ** 2 + centerY ** 2);
             scale = size / h;
 
+            x1 = centerX + scale * centerY;
+            x2 = centerX - scale * centerY;
+            y1 = centerY - scale * centerX;
+            y2 = centerY + scale * centerX;
+
             points.push(
-                x + scale * y, y - scale * x, 0,
-                x - scale * y, y + scale * x, 0,
+                x1, y1, nearZ,
+                x2, y2, nearZ,
+                x2, y2, farZ,
+                x1, y1, farZ,
             );
 
-            // one triangle per strip
-            indices.push(0, i * 2 + 1, i * 2 + 2);
+            offset = i * 4;
+
+            // two triangles per strip
+            indices.push(
+                offset, offset + 1, offset + 2,
+                offset, offset + 2, offset + 3,
+            );
 
             alpha = size * alphaScalar;
 
             if (i < stripCount / 2) {
                 infos.push(true, alpha);
-                alphas.push(alpha, alpha);
+                alphas.push(alpha, alpha, alpha, alpha);
             } else {
                 infos.push(false, alpha);
-                alphas.push(0, 0);
+                alphas.push(0, 0, 0, 0);
             }
         }
 
@@ -115,29 +134,37 @@ void main() {
 
         let toggleIndex = -1;
 
-        if (Math.random() < 0.04 * dt) {
+        if (Math.random() < 0.14 * dt) {
             toggleIndex = ~~rand(0, stripCount);
         }
 
         // skip the origin
-        let infoIndex = 2;
-        let alphaIndex = 1;
+        let infoIndex = 0;
+        let alphaIndex = 0;
 
         const alphas = this.geometry.attributes.alpha.array;
         const fadingStep = 0.003 * dt;
 
-        for (let i = 0; i < stripCount; i++, infoIndex += 2, alphaIndex += 2) {
+        for (let i = 0; i < stripCount; i++, infoIndex += 2, alphaIndex += 4) {
             if (i === toggleIndex) {
                 infos[infoIndex] = !infos[infoIndex];
             }
 
             if (infos[infoIndex]) {
                 if (alphas[alphaIndex] < infos[infoIndex + 1]) {
-                    alphas[alphaIndex] = alphas[alphaIndex + 1] = alphas[alphaIndex] + fadingStep;
+                    alphas[alphaIndex] =
+                        alphas[alphaIndex + 1] =
+                            alphas[alphaIndex + 2] =
+                                alphas[alphaIndex + 3] =
+                                    alphas[alphaIndex] + fadingStep;
                 }
             } else {
                 if (alphas[alphaIndex] > 0) {
-                    alphas[alphaIndex] = alphas[alphaIndex + 1] = alphas[alphaIndex] - fadingStep;
+                    alphas[alphaIndex] =
+                        alphas[alphaIndex + 1] =
+                            alphas[alphaIndex + 2] =
+                                alphas[alphaIndex + 3] =
+                                    alphas[alphaIndex] - fadingStep;
                 }
             }
         }

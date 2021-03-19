@@ -35,7 +35,7 @@ const BF_COMMANDS = [
 ];
 
 async function main() {
-    const inputElms = $('input[type="text"]');
+    const inputElms = $('#puzzle input[type="text"]');
 
     inputElms.eq(1).focus();
 

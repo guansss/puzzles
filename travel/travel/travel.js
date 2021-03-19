@@ -2,13 +2,12 @@ import $ from 'jquery/dist/jquery.slim.js';
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
+import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
 import '../styles.styl';
 import { LightStrips } from './LightStrips';
 import { Space } from './Space';
 import UnrealBloomPass from './UnrealBloomPass';
-import { clamp, rand, timeout } from './utils';
+import { clamp, delay, rand } from './utils';
 
 // expose utils for index.js
 window.$ = $;
@@ -23,33 +22,33 @@ window.travel = async (result, line2) => {
 
     requestAnimationFrame(animate);
 
-    await timeout(1500);
+    await delay(1500);
 
     space.visible = true;
     space.material.opacity = 0;
 
     $('#puzzle').addClass('hide');
 
-    await timeout(2000);
+    await delay(2000);
 
     space.active = false;
 
-    await timeout(500);
+    await delay(400);
 
     lightStrips.active = true;
     bloomPass.threshold = 1.2;
     cameraShakeMagnitude = 1;
 
-    await timeout(2500);
+    await delay(2500);
 
     space.active = true;
     lightStrips.active = false;
 
-    await timeout(300);
+    await delay(300);
 
     cameraShakeMagnitude = 0;
 
-    await timeout(2000);
+    await delay(2000);
 
     $('#puzzle').css('display', 'none');
     $('#result').addClass('show');
@@ -59,17 +58,17 @@ window.travel = async (result, line2) => {
         $('#result .action').click(async () => {
             $('.cover').addClass('active');
 
-            await timeout(1000);
+            await delay(1000);
             location.href = result;
         });
     } else {
-        $('#result .headline1').text('You\'ve lost in the space');
+        $('#result .headline1').text('You\'ve lost in space');
         $('#result .action').text('Refresh').click(() => location.reload());
     }
 };
 
 const scene = new Scene();
-const camera = new PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
+const camera = new PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 15000);
 const renderer = new WebGLRenderer({
     canvas: document.getElementById('canvas'),
     alpha: true,
@@ -86,21 +85,19 @@ const lightStrips = new LightStrips();
 scene.add(lightStrips);
 
 const bloomPass = new UnrealBloomPass();
-const fxaaPass = new ShaderPass(FXAAShader);
+const ssaaPass = new SSAARenderPass(scene, camera, 0x000000, 0);
+ssaaPass.sampleLevel = 3;
 
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
+composer.addPass(ssaaPass);
 composer.addPass(bloomPass);
-composer.addPass(fxaaPass);
 
 function resize() {
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
     composer.setSize(innerWidth, innerHeight);
-
-    fxaaPass.material.uniforms['resolution'].value.x = 1 / (innerWidth * devicePixelRatio);
-    fxaaPass.material.uniforms['resolution'].value.y = 1 / (innerHeight * devicePixelRatio);
 }
 
 window.addEventListener('resize', resize);
