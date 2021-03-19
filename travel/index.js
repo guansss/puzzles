@@ -135,15 +135,19 @@ function brainfuck(command, inputs) {
 }
 
 function fail(inputElms) {
-    inputElms.addClass('shake-rotate').prop('disabled', true);
+    inputElms.addClass('shake-rotate');
+    inputElms.slice(1).prop('disabled', true);
 
     setTimeout(() => {
-        inputElms.removeClass('shake-rotate').prop('disabled', false);
+        inputElms.removeClass('shake-rotate');
 
         // clear all but the first input (the readonly one)
-        inputElms.slice(1).val('').each(function() {
-            this.oldValue = undefined;
-        });
+        inputElms.slice(1)
+            .prop('disabled', false)
+            .val('')
+            .each(function() {
+                this.oldValue = undefined;
+            });
 
         // focus on the first editable input
         inputElms.eq(1).focus();
