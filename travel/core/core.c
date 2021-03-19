@@ -9,7 +9,7 @@
 #define FALSE 0
 
 #define RATE 12.0f // executions
-#define PER 3.0f // seconds
+#define PER 5.0f // seconds
 
 float last_check = 0;
 float allowance = RATE;

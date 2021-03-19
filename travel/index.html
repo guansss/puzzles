@@ -51,10 +51,10 @@ window.onerror = message => {
     document.getElementById('loading').innerHTML = 'UNEXPECTED ERROR<br>' + message;
 };
 
-if (typeof WebAssembly == 'object') {
-    endLoading();
-    document.getElementById('loading').innerHTML = `
-        The puzzle requires WebAssembly feature which isn't supported by this browser,
+if (typeof WebAssembly !== 'object') {
+  endLoading();
+  document.getElementById('loading').innerHTML = `
+        The puzzle requires WebAssembly functionality which isn't supported by this browser,
         please use a <a href="https://browsehappy.com/">modern browser</a> instead.</div>`;
 }
 </script>
