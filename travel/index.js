@@ -46,19 +46,20 @@ async function main() {
         if (e.code === 'Backspace') {
             e.preventDefault();
 
-            // clear current input if it's not empty
-            if (inputElms.eq(currentIndex).val() !== '') {
-                inputElms.eq(currentIndex).val('');
-            } else {
-                // else clear last input
-                if (currentIndex !== 1) {
-                    inputElms.eq(currentIndex - 1).val('').focus();
-                }
+            let currentInput = inputElms.eq(currentIndex);
+
+            // if it's empty, go to previous input
+            if (currentInput.val() === '' && currentIndex !== 1) {
+                currentInput = inputElms.eq(currentIndex - 1);
+                currentInput.focus();
             }
+
+            currentInput.val('');
+            currentInput.get(0).oldValue = undefined;
         } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
             e.preventDefault();
 
-            // go to previous or next input according to the key code
+            // go to previous or next input according to the pressed key
             const targetIndex = clamp(currentIndex + (e.code === 'ArrowLeft' ? -1 : 1), 1, inputElms.length - 1);
 
             inputElms.eq(targetIndex).focus();
