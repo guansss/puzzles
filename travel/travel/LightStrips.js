@@ -5,7 +5,20 @@ const stripCount = 100 * 2;
 
 export class LightStrips extends Mesh {
 
-    active = false;
+    _active = false;
+
+    get active() {
+        return this._active;
+    }
+
+    set active(value) {
+        this.visible = true;
+        this._active = value;
+        this.transitionStartTime = performance.now();
+    }
+
+    transitionStartTime = 0;
+
     infos = [];
 
     constructor() {
@@ -49,8 +62,6 @@ void main() {
 
     init() {
         const indices = [];
-
-        // first point as the origin
         const points = [];
         const alphas = [];
         const infos = [];
@@ -119,15 +130,25 @@ void main() {
         this.infos = infos;
     }
 
-    update(dt) {
-        if (this.active) {
+    update(dt, now) {
+        const t = (now - this.transitionStartTime) / 350;
+
+        if (this._active) {
             if (this.material.uniforms.opacity.value < 1)
                 this.material.uniforms.opacity.value += 0.004 * dt;
+
+            if (t < 1) {
+                this.position.z = -3000 * (1 - t) ** 3;
+            }
         } else {
             if (this.material.uniforms.opacity.value > 0)
                 this.material.uniforms.opacity.value -= 0.004 * dt;
             else
                 return; // skip update when completely invisible
+
+            if (t < 1) {
+                this.position.z = 3000 * t ** 3;
+            }
         }
 
         const infos = this.infos;
@@ -138,7 +159,6 @@ void main() {
             toggleIndex = ~~rand(0, stripCount);
         }
 
-        // skip the origin
         let infoIndex = 0;
         let alphaIndex = 0;
 

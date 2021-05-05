@@ -1,5 +1,5 @@
 import $ from 'jquery/dist/jquery.slim.js';
-import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { Scene, WebGLRenderer } from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
@@ -7,13 +7,12 @@ import '../styles.styl';
 import { LightStrips } from './LightStrips';
 import { Space } from './Space';
 import UnrealBloomPass from './UnrealBloomPass';
-import { clamp, delay, rand } from './utils';
+import { clamp, delay } from './utils';
+import { Camera } from './Camera';
 
 // expose utils for index.js
 window.$ = $;
 window.clamp = clamp;
-
-let cameraShakeMagnitude = 0.7;
 
 window.travel = async (result, line2) => {
     window.travel = () => {};
@@ -24,6 +23,7 @@ window.travel = async (result, line2) => {
 
     await delay(1500);
 
+    camera.shake = true;
     space.visible = true;
     space.material.opacity = 0;
 
@@ -37,16 +37,24 @@ window.travel = async (result, line2) => {
 
     lightStrips.active = true;
     bloomPass.threshold = 1.2;
-    cameraShakeMagnitude = 1;
 
-    await delay(2500);
+    await delay(500);
+
+    camera.highSpeed = true;
+
+    await delay(2300);
+
+    camera.highSpeed = false;
+    lightStrips.active = false;
+
+    await delay(100);
 
     space.active = true;
-    lightStrips.active = false;
+    space.rotate = true;
 
     await delay(300);
 
-    cameraShakeMagnitude = 0;
+    camera.shake = false;
 
     await delay(2000);
 
@@ -68,7 +76,7 @@ window.travel = async (result, line2) => {
 };
 
 const scene = new Scene();
-const camera = new PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 15000);
+const camera = new Camera();
 const renderer = new WebGLRenderer({
     canvas: document.getElementById('canvas'),
     alpha: true,
@@ -118,16 +126,9 @@ function animate(now) {
             bloomPass.threshold -= 0.002 * dt;
         }
 
-        lightStrips.update(dt);
+        lightStrips.update(dt, now);
         space.update(dt, now);
-
-        // shake it!
-        camera.position.set(rand(-1, 1) * cameraShakeMagnitude, rand(-1, 1) * cameraShakeMagnitude, 0);
-        camera.rotation.z = rand(-1, 1) * 0.01 * cameraShakeMagnitude;
-
-        if (!cameraShakeMagnitude) {
-            camera.rotation.y = Math.sin(now / 2500) * 0.2;
-        }
+        camera.update(dt, now);
 
         composer.render(scene, camera);
 
@@ -163,6 +164,7 @@ if (GUI) {
         bloomStrength: 1.5,
         bloomThreshold: 0,
         bloomRadius: 0,
+        fov: camera.fov,
     };
     const gui = new GUI();
 
@@ -170,4 +172,6 @@ if (GUI) {
     gui.add(params, 'bloomThreshold', 0.0, 1.0).onChange(value => bloomPass.threshold = Number(value));
     gui.add(params, 'bloomStrength', 0.0, 3.0).onChange(value => bloomPass.strength = Number(value));
     gui.add(params, 'bloomRadius', 0.0, 1.0).step(0.01).onChange(value => bloomPass.radius = Number(value));
+
+    gui.add(params, 'fov', 0, 150).step(1).onChange(value => camera.fov = Number(value));
 }

@@ -17,6 +17,8 @@ export class Space extends Points {
 
     transitionStartTime = 0;
 
+    rotate = false;
+
     constructor() {
         super(new BufferGeometry(), new PointsMaterial({
             size: 1,
@@ -50,6 +52,10 @@ export class Space extends Points {
     }
 
     update(dt, now) {
+        if (this.rotate) {
+            this.rotation.y = Math.sin(now / 2500) * 0.2;
+        }
+
         this.rotateX(0.00005 * dt);
 
         const t = (now - this.transitionStartTime) / 500;
@@ -62,10 +68,12 @@ export class Space extends Points {
                 this.position.z = -100 * (1 - t) ** 2;
             }
         } else {
-            if (this.material.opacity > 0)
-                this.material.opacity -= 0.002 * dt;
-            else
-                this.visible = false;
+            if (t > 0.3) {
+                if (this.material.opacity > 0)
+                    this.material.opacity -= 0.003 * dt;
+                else
+                    this.visible = false;
+            }
 
             if (t < 1) {
                 this.position.z = 100 * t ** 3;
