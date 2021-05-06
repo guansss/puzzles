@@ -8,8 +8,8 @@ const CONFIG = {
     entry: './travel/travel.js',
     output: {
         filename: 'travel.min.js',
-        path: path.resolve(__dirname, 'build'),
-        publicPath: '/build/',
+        path: path.resolve(__dirname, 'dist'),
+        publicPath: '/dist/',
     },
     module: {
         rules: [
