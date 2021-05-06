@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sora</title>
+
+  <style type="text/stylus">
+*
+    box-sizing: border-box
+    cursor: default
+
+html, body
+    display: flex
+    flex-direction: column
+    height: 100%
+    align-items: center
+    justify-content: center
+    background: #333
+    color: #FFF
+    font-family: Verdana
+    font-size: 36px
+
+.headline
+    margin-bottom: 40px
+    font-size: 100px
+
+.title
+    height: 1em
+    background: currentcolor
+
+.header
+    position: relative
+    width: 640px
+    padding: 6px
+    overflow: hidden
+    background: #F3F3F3
+    color: #111
+    border-radius: 4px
+
+    .title
+        position: relative
+        width: 4em
+        // triangles
+        $size = 0.25em
+
+        &:before, &:after
+            content: ''
+            position: absolute
+            top: (1 - $size * 2) * 0.5
+            right: $size * -3
+            width: $size
+            border-left: $size solid #666
+            border-top: $size solid transparent
+            border-bottom: $size solid transparent
+
+        &:after
+            right: $size * -4
+
+    .number
+        position: absolute
+        top: 2px
+        right: 4px
+
+    .progress
+        margin-top: 4px
+        width: 100%
+        height: 6px
+        background: #F29D9D
+        border-radius: 2px
+
+.panel
+    display: grid
+    margin-top: 16px
+    width: 640px
+    padding: 16px
+    grid-template-columns: 45% min-content auto
+    grid-row-gap: @padding
+    align-items: center
+    background: #0003
+
+    .title
+        width: 2.5em
+
+input
+    width: 2em
+    height: 1em
+    background: transparent
+    color: inherit
+    font: inherit
+    line-height: 1
+    border: none
+    outline: none !important
+    cursor: pointer
+    transition: background 0.1s ease-out
+
+    &:hover, &:focus
+        background: #FFF2
+
+.result
+    margin: 36px 0
+    opacity: 0
+    font-size: 24px
+    line-height: 2
+    text-align: center
+    transition: opacity 0.2s ease-out
+
+.small
+    margin-top -8px
+    color #666
+    font-size 12px
+
+.key
+    margin-top: 16px
+    font-size: 36px
+    cursor: text
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+      crossorigin="anonymous"></script>
+  <script src="https://stylus-lang.com/try/stylus.min.js"></script>
+</head>
+<body>
+<script>
+var rawStylus = $('style[type="text/stylus"]').text();
+
+stylus.render(rawStylus, {}, function(err, css) {
+    if (err) document.write(err + '');
+
+    $('<style/>').text(css).appendTo('head');
+});
+</script>
+
+<div class="headline">Sora</div>
+<div class="header">
+  <div class="title"></div>
+  <div class="triangle"></div>
+  <div class="number">200%</div>
+  <div class="progress"></div>
+</div>
+<div class="panel">
+  <div class="title"></div>
+  <div class="plus">+</div>
+  <input type="text" placeholder="???">
+  <div class="title"></div>
+  <div class="plus">+</div>
+  <input type="text" placeholder="???">
+</div>
+<div class="result">
+  <div>You've proved your love for Sora!</div>
+  <div class="small">...probably, if you figured out the answer on your own.</div>
+  <div>Here's the reward, you know how to use it.</div>
+  <div class="key">KEY</div>
+</div>
+
+<script src="index.js"></script>
+</body>
+</html>
