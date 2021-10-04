@@ -5,7 +5,7 @@ const glob = require('glob');
 
 const distDir = path.resolve(__dirname, '../dist');
 
-function collect() {
+async function main() {
     if (fs.existsSync(distDir)) {
         if (!fs.lstatSync(distDir).isDirectory()) {
             throw new Error(`Path ${distDir} is not a directory.`);
@@ -20,6 +20,8 @@ function collect() {
     collectTravel();
 
     copyFile(path.resolve(__dirname, '../index.html'), path.resolve(distDir, 'index.html'));
+
+    await publish();
 }
 
 function collectSora() {
@@ -69,14 +71,16 @@ function copyFile(from, to) {
 function publish() {
     console.log('Publishing...');
 
-    ghpages.publish(distDir, function(err) {
-        if (err) {
-            throw err;
-        }
+    return new Promise(resolve => {
+        ghpages.publish(distDir, function(err) {
+            if (err) {
+                throw err;
+            }
 
-        console.log('Published');
+            console.log('Published');
+            resolve();
+        });
     });
 }
 
-collect();
-publish();
+main();
