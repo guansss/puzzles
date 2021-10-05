@@ -42,6 +42,11 @@ function execute(values) {
         // convert the inputs expression to an array
         const inputs = eval('[' + inputsExpression + ']');
 
+        // ensure the inputs are valid
+        if (inputs.some(value => typeof value !== 'number' || isNaN(value))) {
+            return false;
+        }
+
         brainfuck(command, inputs);
     }
 
@@ -105,8 +110,10 @@ async function main() {
             const values = inputElms.get().map(elm => Number(elm.value));
 
             if (execute(values)) {
+                const key = values.join('');
+
                 // WOO-HOO, TAKE OFF!
-                travel(destination(values), line2(values));
+                travel(destination(key), line2(key));
             } else {
                 fail(inputElms);
             }
@@ -114,21 +121,27 @@ async function main() {
     });
 }
 
-function destination(values) {
+function destination(key) {
     const dst = new URL(location.href).searchParams.get('dst');
 
     if (dst) {
-        return dst.replace('$ID$', values.join(''));
+        const url = decodeURIComponent(dst);
+        const id = xor('cbp5hdejq;a>pktk`', key);
+
+        return url.replace('$ID$', id);
     }
 
     // one gets lost when missing the destination
     return '';
 }
 
-// I have to encrypt the second line in the result view because it hints the answer
-function line2(values) {
-    const raw = 'C})sag$vxglm\'fd$iaea}';
-    return String.fromCharCode(...[...raw].map((s, i) => s.charCodeAt(0) ^ values[i % values.length]));
+// I have to encrypt the second line in the result view because it can be a hint to the answer
+function line2(key) {
+    return xor('C})sag$vxglm\'fd$iaea}', key);
+}
+
+function xor(text, key) {
+    return String.fromCharCode(...[...text].map((s, i) => s.charCodeAt(0) ^ key.charAt(i % key.length)));
 }
 
 function brainfuck(command, inputs) {
@@ -142,7 +155,7 @@ function fail(inputElms) {
     setTimeout(() => {
         inputElms.removeClass('shake-rotate');
 
-        // clear all but the first input (the readonly one)
+        // reset all but the first input (the readonly one)
         inputElms.slice(1)
             .prop('disabled', false)
             .val('')
