@@ -5,7 +5,7 @@ const ThreeMinifierPlugin = require('@yushijinhun/three-minifier-webpack');
 const threeMinifier = new ThreeMinifierPlugin();
 
 const CONFIG = {
-    entry: './travel/travel.js',
+    entry: path.resolve(__dirname, 'travel/travel.js'),
     output: {
         filename: 'travel.min.js',
         path: path.resolve(__dirname, 'dist'),

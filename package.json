@@ -6,9 +6,9 @@
   "author": "guansss <821143943@qq.com>",
   "license": "MIT",
   "scripts": {
-    "start-travel": "cd %INIT_CWD%/travel && webpack-dev-server --mode=development",
-    "build-travel:core": "cd %INIT_CWD%/travel && emsdk_env.bat && emcc core/core.c -Os -s WASM=1 -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\" -o dist/core.js",
-    "build-travel": "cd %INIT_CWD%/travel && yarn build-travel:core && webpack",
+    "start-travel": "webpack-dev-server --config=travel/webpack.config.js --mode=development",
+    "build-travel:core": "emsdk_env.bat && emcc travel/core/core.c -Os -s WASM=1 -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\" -o travel/dist/core.js",
+    "build-travel": "yarn build-travel:core && webpack --config=travel/webpack.config.js",
     "deploy": "node scripts/deploy.js"
   },
   "devDependencies": {

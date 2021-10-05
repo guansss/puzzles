@@ -21,55 +21,55 @@
 <body>
 <canvas id="canvas"></canvas>
 <div id="puzzle">
-  <div class="wrapper1">
-    <div class="wrapper2">
-      <div class="verse">
-        <p>Look around you, everything's black and white</p>
-        <p>Oh, how simple is that?</p>
-        <p>Don't you know that it's about the way you look at this world</p>
-        <p>Go straight, or to left</p>
-        <p>Go back, even to right</p>
-      </div>
-      <div class="panel">
-        <input type="text" value="2" disabled>
-        <input type="text">
-        <input type="text">
-        <input type="text">
-        <input type="text">
-        <input type="text">
-        <input type="text">
-        <input type="text">
-        <input type="text">
-      </div>
-      <div id="loading">Loading...</div>
+    <div class="wrapper1">
+        <div class="wrapper2">
+            <div class="lines">
+                <p>Look around you, everything's black and white</p>
+                <p>Oh, how simple is that? Don't you know that</p>
+                <p>It's about the way you look at this world</p>
+                <p>Go straight, or to left</p>
+                <p>Go back, even to right</p>
+            </div>
+            <div class="panel">
+                <input type="text" value="2" disabled>
+                <input type="text">
+                <input type="text">
+                <input type="text">
+                <input type="text">
+                <input type="text">
+                <input type="text">
+                <input type="text">
+                <input type="text">
+            </div>
+            <div id="loading">Loading...</div>
+        </div>
     </div>
-  </div>
 </div>
 <div id="result">
-  <div class="headline1">You've traveled here</div>
-  <div class="headline2"></div>
-  <div class="action">Reward</div>
+    <div class="headline1">You've traveled here</div>
+    <div class="headline2"></div>
+    <div class="action">Reward</div>
 </div>
 <div class="cover"></div>
 
 <script>
-const loadingUpdater = (i => setInterval(() => document.getElementById('loading').innerText = 'Loading' + '.'.repeat(i++ % 3 + 1), 500))(0);
+    const loadingUpdater = (i => setInterval(() => document.getElementById('loading').innerText = 'Loading' + '.'.repeat(i++ % 3 + 1), 500))(0);
 
-function endLoading() {
-    clearInterval(loadingUpdater);
-}
+    function endLoading() {
+        clearInterval(loadingUpdater);
+    }
 
-window.onerror = message => {
-    endLoading();
-    document.getElementById('loading').innerHTML = 'UNEXPECTED ERROR<br>' + message;
-};
+    window.onerror = message => {
+        endLoading();
+        document.getElementById('loading').innerHTML = 'UNEXPECTED ERROR<br>' + message;
+    };
 
-if (typeof WebAssembly !== 'object') {
-  endLoading();
-  document.getElementById('loading').innerHTML = `
+    if (typeof WebAssembly !== 'object') {
+        endLoading();
+        document.getElementById('loading').innerHTML = `
         The puzzle requires WebAssembly functionality which isn't supported by this browser,
         please use a <a href="https://browsehappy.com/">modern browser</a> instead.</div>`;
-}
+    }
 </script>
 
 <script src="dist/travel.min.js"></script>
