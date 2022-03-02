@@ -1,5 +1,7 @@
 raw.js
 dist/
+target/
+Cargo.lock
 
 .idea/
 
