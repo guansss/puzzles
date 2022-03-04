@@ -2,6 +2,9 @@ mod colors;
 mod interpreter;
 mod ops;
 
+#[cfg(test)]
+mod tests;
+
 use wasm_bindgen::prelude::*;
 use web_sys::ImageData;
 
@@ -18,10 +21,10 @@ pub fn piet(program: ImageData, input: &str, output: &str) -> bool {
         pixels: program.data(),
     };
 
-    run_piet(image, &input, &output)
+    run_piet(&image, &input, &output)
 }
 
-pub fn run_piet(image: interpreter::Image, input: &str, output: &str) -> bool {
+pub fn run_piet(image: &interpreter::Image, input: &str, output: &str) -> bool {
     let mut interpreter = interpreter::Interpreter::new(&image, input);
 
     interpreter.run();
