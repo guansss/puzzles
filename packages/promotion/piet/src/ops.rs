@@ -1,6 +1,4 @@
-use interpreter::Interpreter;
-use std::io;
-use std::io::Write;
+use crate::interpreter::Interpreter;
 
 pub fn call_op(interpreter: &mut Interpreter, color_value: (i32, i32)) {
     match color_value {
@@ -17,7 +15,8 @@ pub fn call_op(interpreter: &mut Interpreter, color_value: (i32, i32)) {
         (3, 2) => switch(interpreter),
         (4, 0) => duplicate(interpreter),
         (4, 1) => roll(interpreter),
-        (4, 2) | (5, 0) => input(interpreter),
+        (4, 2) => input_number(interpreter),
+        (5, 0) => input_char(interpreter),
         (5, 1) => out_number(interpreter),
         (5, 2) => out_char(interpreter),
         _ => (),
@@ -141,30 +140,26 @@ fn roll(interpreter: &mut Interpreter) {
     }
 }
 
-fn input(interpreter: &mut Interpreter) {
-    print!("Please type a number: ");
+fn input_number(interpreter: &mut Interpreter) {
+    if let Some(n) = interpreter.input.pop() {
+        interpreter.stack.push(n.to_digit(10).unwrap() as i32);
+    }
+}
 
-    io::stdout().flush().unwrap();
-
-    let mut value = String::new();
-
-    io::stdin()
-        .read_line(&mut value)
-        .expect("Failed to read line");
-
-    let value: i32 = value.trim().parse().expect("Please type a number!");
-
-    interpreter.stack.push(value);
+fn input_char(interpreter: &mut Interpreter) {
+    if let Some(n) = interpreter.input.pop() {
+        interpreter.stack.push(n as i32);
+    }
 }
 
 fn out_number(interpreter: &mut Interpreter) {
     if let Some(n) = interpreter.stack.pop() {
-        println!("{}", n);
+        interpreter.output.push_str(&n.to_string());
     }
 }
 
 fn out_char(interpreter: &mut Interpreter) {
     if let Some(n) = interpreter.stack.pop() {
-        println!("{}", char::from(n as u8));
+        interpreter.output.push(n as u8 as char);
     }
 }

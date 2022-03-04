@@ -1,6 +1,37 @@
-use image::{DynamicImage, GenericImage, Rgba};
-use colors;
-use ops;
+use crate::colors;
+use crate::ops;
+
+use wasm_bindgen::Clamped;
+
+pub struct Image {
+    pub width: u32,
+    pub height: u32,
+    pub pixels: Clamped<Vec<u8>>,
+}
+
+impl Image {
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    pub fn get_pixel(&self, x: u32, y: u32) -> &colors::Rgba {
+        if !self.in_bounds(x, y) {
+            return &[];
+        }
+
+        let index = ((y * self.width() + x) * 4) as usize;
+
+        &self.pixels[index..index + 4]
+    }
+
+    pub fn in_bounds(&self, x: u32, y: u32) -> bool {
+        x < self.width() && y < self.height()
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub enum Direction {
@@ -30,7 +61,6 @@ impl Direction {
     }
 }
 
-
 #[derive(Debug)]
 pub enum CodelChooser {
     Right,
@@ -46,24 +76,32 @@ impl CodelChooser {
     }
 }
 
-pub struct Interpreter {
+pub struct Interpreter<'a> {
     pub codel_chooser: CodelChooser,
     pub direction_pointer: Direction,
-    image: DynamicImage,
-    current_color: Rgba<u8>,
+    image: &'a Image,
+    current_color: &'a colors::Rgba,
     pub current_size: u32,
     pub stack: Vec<i32>,
+    pub input: String,
+    pub output: String,
+
+    // max available steps to prevent infinite loops, when it runs out the interpreter will exit
+    pub steps: i32,
 }
 
-impl Interpreter {
-    pub fn new(image: DynamicImage) -> Interpreter {
+impl<'a> Interpreter<'a> {
+    pub fn new(image: &'a Image, input: &'a str) -> Interpreter<'a> {
         Interpreter {
             codel_chooser: CodelChooser::Left,
             direction_pointer: Direction::Right,
             current_color: image.get_pixel(0, 0),
             current_size: 0,
-            image: image,
+            image,
+            input: String::from(input),
+            output: String::new(),
             stack: Vec::new(),
+            steps: 1000,
         }
     }
 
@@ -74,6 +112,12 @@ impl Interpreter {
         let mut y = 0;
 
         loop {
+            self.steps -= 1;
+
+            if self.steps == 0 {
+                return;
+            }
+
             // If white just sail through until we hit another color
             if self.current_color_code() == 1 {
                 let (x_next, y_next) = self.move_step(x, y);
@@ -119,7 +163,7 @@ impl Interpreter {
         }
     }
 
-    fn process_action(&mut self, next_color: &Rgba<u8>) {
+    fn process_action(&mut self, next_color: &colors::Rgba) {
         let color_code = colors::color_code(next_color).unwrap();
         if color_code != 1 {
             let curr_color = self.current_color_code();
@@ -128,7 +172,6 @@ impl Interpreter {
             ops::call_op(self, (hue_diff, shade_diff));
         }
     }
-
 
     // Based on the number of attempts this either toggles the CC back and forth
     // or updates the current direction of the DP
@@ -167,7 +210,7 @@ impl Interpreter {
         self.current_color == self.pixel_at(x, y)
     }
 
-    fn pixel_at(&self, x: i32, y: i32) -> Rgba<u8> {
+    fn pixel_at(&self, x: i32, y: i32) -> &'a colors::Rgba {
         self.image.get_pixel(x as u32, y as u32)
     }
 
@@ -208,62 +251,86 @@ impl Interpreter {
                 marked[visit_index] = true;
 
                 match self.direction_pointer {
-                    Direction::Left => if x < *mx {
-                        *mx = x;
-                        *my = y;
-                    } else if x == *mx {
-                        match self.codel_chooser {
-                            CodelChooser::Left => if y > *my {
-                                *my = y;
-                            },
+                    Direction::Left => {
+                        if x < *mx {
+                            *mx = x;
+                            *my = y;
+                        } else if x == *mx {
+                            match self.codel_chooser {
+                                CodelChooser::Left => {
+                                    if y > *my {
+                                        *my = y;
+                                    }
+                                }
 
-                            CodelChooser::Right => if y < *my {
-                                *my = y;
-                            },
+                                CodelChooser::Right => {
+                                    if y < *my {
+                                        *my = y;
+                                    }
+                                }
+                            }
                         }
-                    },
-                    Direction::Right => if x > *mx {
-                        *mx = x;
-                        *my = y;
-                    } else if x == *mx {
-                        match self.codel_chooser {
-                            CodelChooser::Left => if y < *my {
-                                *my = y;
-                            },
+                    }
+                    Direction::Right => {
+                        if x > *mx {
+                            *mx = x;
+                            *my = y;
+                        } else if x == *mx {
+                            match self.codel_chooser {
+                                CodelChooser::Left => {
+                                    if y < *my {
+                                        *my = y;
+                                    }
+                                }
 
-                            CodelChooser::Right => if y > *my {
-                                *my = y;
-                            },
+                                CodelChooser::Right => {
+                                    if y > *my {
+                                        *my = y;
+                                    }
+                                }
+                            }
                         }
-                    },
-                    Direction::Down => if y > *my {
-                        *mx = x;
-                        *my = y;
-                    } else if y == *my {
-                        match self.codel_chooser {
-                            CodelChooser::Left => if x > *mx {
-                                *mx = x;
-                            },
+                    }
+                    Direction::Down => {
+                        if y > *my {
+                            *mx = x;
+                            *my = y;
+                        } else if y == *my {
+                            match self.codel_chooser {
+                                CodelChooser::Left => {
+                                    if x > *mx {
+                                        *mx = x;
+                                    }
+                                }
 
-                            CodelChooser::Right => if x < *mx {
-                                *mx = x;
-                            },
+                                CodelChooser::Right => {
+                                    if x < *mx {
+                                        *mx = x;
+                                    }
+                                }
+                            }
                         }
-                    },
-                    Direction::Up => if y < *my {
-                        *mx = x;
-                        *my = y;
-                    } else if y == *my {
-                        match self.codel_chooser {
-                            CodelChooser::Left => if x < *mx {
-                                *mx = x;
-                            },
+                    }
+                    Direction::Up => {
+                        if y < *my {
+                            *mx = x;
+                            *my = y;
+                        } else if y == *my {
+                            match self.codel_chooser {
+                                CodelChooser::Left => {
+                                    if x < *mx {
+                                        *mx = x;
+                                    }
+                                }
 
-                            CodelChooser::Right => if x > *mx {
-                                *mx = x;
-                            },
+                                CodelChooser::Right => {
+                                    if x > *mx {
+                                        *mx = x;
+                                    }
+                                }
+                            }
                         }
-                    },
+                    }
                 }
 
                 self.block_walk_recursive(size, x + 1, y, mx, my, marked);
