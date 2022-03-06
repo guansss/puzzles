@@ -98,10 +98,12 @@ impl<'a> Interpreter<'a> {
             current_color: image.get_pixel(0, 0),
             current_size: 0,
             image,
-            input: String::from(input),
             output: String::new(),
             stack: Vec::new(),
             steps: 1000,
+
+            // the input string should be reversed because we'll be using pop() on it
+            input: input.chars().rev().collect(),
         }
     }
 

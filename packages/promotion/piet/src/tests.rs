@@ -13,6 +13,7 @@ fn hello() {
 #[test]
 fn adder() {
     // this program deliberately outputs two "n" before the addition result
+    assert_piet("assets/adder.png", "12", "nn1+2=3");
     assert_piet("assets/adder.png", "55", "nn5+5=10");
 }
 
