@@ -17,15 +17,11 @@ fn adder() {
     assert_piet("assets/adder.png", "55", "nn5+5=10");
 }
 
-pub fn assert_piet(file: &str, input: &str, output: &str) {
+pub fn assert_piet(file: &str, input: &str, expected_output: &str) {
     let image = read_image(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(file));
+    let output = run_piet(&image, input);
 
-    assert!(
-        run_piet(&image, input, output),
-        "Expected: {}, Got: {}",
-        output,
-        run_piet_then_output(&image, input)
-    );
+    assert_eq!(expected_output, output);
 }
 
 fn read_image<T: AsRef<Path>>(file: T) -> interpreter::Image {
@@ -36,11 +32,4 @@ fn read_image<T: AsRef<Path>>(file: T) -> interpreter::Image {
         height: image.height(),
         pixels: Clamped(image.as_bytes().to_vec()),
     }
-}
-
-pub fn run_piet_then_output(image: &interpreter::Image, input: &str) -> String {
-    let mut interpreter = interpreter::Interpreter::new(&image, input);
-
-    interpreter.run();
-    interpreter.output
 }
