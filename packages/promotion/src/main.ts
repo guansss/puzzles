@@ -1,7 +1,10 @@
-import App from './App.svelte'
+import { createApp } from 'vue';
+import css from './main.module.css';
 
-const app = new App({
-  target: document.getElementById('app')
-})
+const template = /* HTML */ ` <div :class="css.container"></div> `;
 
-export default app
+function setup() {
+    return { css };
+}
+
+createApp({ template, setup }).mount('#app');
